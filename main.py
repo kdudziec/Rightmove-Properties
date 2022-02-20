@@ -7,8 +7,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from fill_forms import FillForms
 
-CHROME_DRIVE_PATH = "C:\DRIVERS\chromedriver_win32\chromedriver"
-GOOGLE_EXCEL_SPREADSHEET_LINK = "https://docs.google.com/spreadsheets/d/15ZdwC4U83OvcObbrOYJ_FL2xLKTEYerWwmS-hHAvzHo/edit#gid=2036120036"
+CHROME_DRIVE_PATH = "C:\DRIVERS\chromedriver_win32\chromedriver"    # Path to chromedriver
 service = Service(CHROME_DRIVE_PATH)
 driver = webdriver.Chrome(service=service)
 driver.get("https://www.rightmove.co.uk/")
