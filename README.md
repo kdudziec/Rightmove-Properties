@@ -6,4 +6,4 @@ The properties must:
 - be a house
 - added in 24h
 
-The results must be saved in excel file
+The results must be saved in excel file.
