@@ -7,7 +7,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from fill_forms import FillForms
 
-CHROME_DRIVE_PATH = "C:\DRIVERS\chromedriver_win32\chromedriver"    # Path to chromedriver
+CHROME_DRIVE_PATH = "C:\DRIVERS\chromedriver_win32\chromedriver"
+
 service = Service(CHROME_DRIVE_PATH)
 driver = webdriver.Chrome(service=service)
 driver.get("https://www.rightmove.co.uk/")
@@ -103,6 +104,14 @@ driver.close()
 # print(all_prices)
 # print(all_links)
 
-# Save all_locations, all_prices, all_link to excel spreadsheet
+
 fill_form = FillForms(all_locations, all_prices, all_links)
+
+# Save all_locations, all_prices, all_link to excel spreadsheet
 fill_form.fill_excel()
+
+# Save all_locations, all_prices, all_link to google drive excel spreadsheet
+fill_form.fill_google_spreadsheet()
+
+# Save all_locations, all_prices, all_link to csv file
+fill_form.fill_csv()
