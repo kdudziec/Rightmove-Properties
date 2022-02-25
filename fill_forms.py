@@ -1,11 +1,14 @@
 from openpyxl import load_workbook
 from openpyxl.styles import Font
-from selenium.webdriver.chrome.service import Service
 import xlsxwriter
 import datetime
+from googleapiclient.discovery import build
+from google.oauth2 import service_account
+import csv
 
-CHROME_DRIVER_PATH = "C:\DRIVERS\chromedriver_win32\chromedriver.exe"
-service = Service(CHROME_DRIVER_PATH)
+SAMPLE_SPREADSHEET_ID = '15ZdwC4U83OvcObbrOYJ_FL2xLKTEYerWwmS-hHAvzHo'
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+SERVICE_ACCOUNT_FILE = 'keys.json'
 
 
 class FillForms:
@@ -75,3 +78,29 @@ class FillForms:
             link_row += 1
 
         self.workbook.save('Rightmove Houses.xlsx')
+
+    def fill_google_spreadsheet(self):
+        # Prepare the Google Sheet
+        self.creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+        self.service = build('sheets', 'v4', credentials=self.creds)
+        self.sheet = self.service.spreadsheets()
+
+        # Prepare the data
+        self.properties = ["", "", "", ""]
+        for row in range(len(self.locations)):
+            self.properties[row] = [self.time_stamp, self.locations[row], self.prices[row], self.links[row]]
+            self.properties.append(self.properties[row])
+
+        # Fill in the Google Spreadsheet
+        request = self.sheet.values().append(spreadsheetId=SAMPLE_SPREADSHEET_ID,
+                                        range="Properties!A2", valueInputOption="USER_ENTERED",
+                                        insertDataOption="INSERT_ROWS", body={"values": self.properties})
+        request.execute()
+
+    def fill_csv(self):
+        with open('Rightmove Houses.csv', 'a', newline='') as file:
+            writer = csv.writer(file)
+            for line in range(len(self.locations)):
+                writer.writerow([self.time_stamp, self.locations[line], self.prices[line], self.links[line]])
+
+
