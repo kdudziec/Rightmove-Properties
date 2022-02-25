@@ -7,3 +7,4 @@ The properties must:
 - added in 24h
 
 The results are saved in excel, google spreadsheet and csv file.
+To save the results in google spreadsheet the project requires creating a deafault google excel spreadsheet in Google Drive and authorising it in Google Cloud.
