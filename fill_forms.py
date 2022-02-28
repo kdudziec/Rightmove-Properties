@@ -6,7 +6,7 @@ from googleapiclient.discovery import build
 from google.oauth2 import service_account
 import csv
 
-SAMPLE_SPREADSHEET_ID = '15ZdwC4U83OvcObbrOYJ_FL2xLKTEYerWwmS-hHAvzHo'
+PROPERTY_SPREADSHEET_ID = '15ZdwC4U83OvcObbrOYJ_FL2xLKTEYerWwmS-hHAvzHo'
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 SERVICE_ACCOUNT_FILE = 'keys.json'
 
@@ -49,8 +49,6 @@ class FillForms:
 
         # Identify the number of occupied rows
         last_row = self.worksheet.max_row
-        if last_row == 1:   # Make the 2nd row empty if not already done so
-            last_row += 1
 
         # Fill in  the timestamps
         timestamp_row = last_row + 1
@@ -86,16 +84,15 @@ class FillForms:
         self.sheet = self.service.spreadsheets()
 
         # Prepare the data
-        self.properties = ["", "", "", ""]
+        self.properties = []
         for row in range(len(self.locations)):
-            self.properties[row] = [self.time_stamp, self.locations[row], self.prices[row], self.links[row]]
-            self.properties.append(self.properties[row])
+            self.list = [self.time_stamp, self.locations[row], self.prices[row], self.links[row]]
+            self.properties.append(self.list)
 
         # Fill in the Google Spreadsheet
-        request = self.sheet.values().append(spreadsheetId=SAMPLE_SPREADSHEET_ID,
-                                        range="Properties!A2", valueInputOption="USER_ENTERED",
-                                        insertDataOption="INSERT_ROWS", body={"values": self.properties})
-        request.execute()
+        self.sheet.values().append(spreadsheetId=PROPERTY_SPREADSHEET_ID,
+                                    range="Properties!A2", valueInputOption="USER_ENTERED",
+                                    insertDataOption="INSERT_ROWS", body={"values": self.properties}).execute()
 
     def fill_csv(self):
         with open('Rightmove Houses.csv', 'a', newline='') as file:
