@@ -12,6 +12,7 @@ CHROME_DRIVE_PATH = "C:\DRIVERS\chromedriver_win32\chromedriver"
 service = Service(CHROME_DRIVE_PATH)
 driver = webdriver.Chrome(service=service)
 driver.get("https://www.rightmove.co.uk/")
+driver.maximize_window()
 driver.implicitly_wait(10)
 
 # Deal with cookies
@@ -72,7 +73,8 @@ for n in range(number_of_pages):
     locations = driver.find_elements(By.XPATH, "//meta[@itemprop='streetAddress']")
     for location in locations:
         get_location = location.get_attribute("content")
-        all_locations.append(get_location)
+        strip_get_location = " ".join(get_location.splitlines())    # Remove a potential 'Enter'(new line) from the location
+        all_locations.append(strip_get_location)
 
     # 2. Find and append prices
     prices = driver.find_elements(By.CLASS_NAME, "propertyCard-priceValue")
@@ -81,7 +83,8 @@ for n in range(number_of_pages):
         all_prices.append(price_text)
 
     # 3. Find and append links
-    links = driver.find_elements(By.XPATH, "//div[@class='l-searchResult is-list']//descendant::a[@class='propertyCard-link']")
+    links = driver.find_elements(By.XPATH,
+                                 "//div[@class='l-searchResult is-list']//descendant::a[@class='propertyCard-link']")
     for link in links:
         link_href = link.get_attribute("href")
         all_links.append(link_href)
@@ -100,10 +103,21 @@ for n in range(number_of_pages):
         break
 driver.close()
 
+# Remove duplicate properties
+non_dup_links = []
+n = 0
+for link in all_links:
+    if link not in non_dup_links:
+        non_dup_links.append(link)
+    else:
+        all_locations.pop(n)
+        all_prices.pop(n)
+        all_links.pop(n)
+    n += 1
+
 # print(all_locations)
 # print(all_prices)
 # print(all_links)
-
 
 fill_form = FillForms(all_locations, all_prices, all_links)
 
